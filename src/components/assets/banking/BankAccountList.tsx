@@ -1,11 +1,4 @@
-import { BankAccount } from "./BankAccount";
-
-interface BankAccountListProps {
-  bankAccountData: BankAccount[]; // is a type of bank account
-  userId: string;
-  handleDeleteFromState: (id: string) => void;
-  error: string | null;
-}
+import { BankAccountListProps } from "../../../data/types";
 
 const BankAccountList= ({ bankAccountData, handleDeleteFromState, error,
 }: BankAccountListProps) => {

@@ -15,6 +15,15 @@
     handleAddVehicle: () => void;
   }
 
+  export interface VehicleTotalProps {
+    vehicleData: Vehicle[];
+  }
+
+  export interface VehicleListProps {
+    vehicleData: Vehicle[];
+    handleDeleteFromState: (id: string) => void;
+  }
+
   export interface BankAccount {
     id?: string;
     name: string;
@@ -26,6 +35,13 @@
     newBankAccount: BankAccount;
     handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
     handleAddBankAccount: () => void;
+  }
+
+  export interface BankAccountListProps {
+    bankAccountData: BankAccount[]; // is a type of bank account
+    userId: string;
+    handleDeleteFromState: (id: string) => void;
+    error: string | null;
   }
 
   export interface BankAccountTotalProps {

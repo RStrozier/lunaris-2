@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchData } from "../firebase/firestoreUtils";
-import { BankAccount } from "../components/assets/banking/BankAccount";
+import { BankAccount } from "../data/types";
 
 const useBankAccountData = (userId: string) => {
   // Explicitly type the state as an array of BankAccount

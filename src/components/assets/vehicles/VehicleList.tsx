@@ -1,9 +1,4 @@
-import { Vehicle } from "../../../hooks/useVehicleData";
-
-interface VehicleListProps {
-  vehicleData: Vehicle[];
-  handleDeleteFromState: (id: string) => void;
-}
+import { VehicleListProps } from "../../../data/types";
 
 const VehicleList = ({ vehicleData, handleDeleteFromState }: VehicleListProps) => {
   return (

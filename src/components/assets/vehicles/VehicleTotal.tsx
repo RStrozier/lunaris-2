@@ -1,8 +1,4 @@
-import { Vehicle } from "../../../hooks/useVehicleData";
-
-interface VehicleTotalProps {
-  vehicleData: Vehicle[];
-}
+import { VehicleTotalProps } from "../../../data/types";
 
 const VehicleTotal = ({ vehicleData }: VehicleTotalProps) => {
   // Calculate the total net worth
