@@ -13,11 +13,13 @@ import OtherAssetsTotal from "../components/assets/other/OtherAssetsTotal";
 import useOtherAssetsData from "../hooks/useOtherAssetsData";
 import { Link } from "react-router-dom";
 import NetWorth from "../components/NetWorth";
+import LoadingIndicator from "../components/LoadingIndicator";
 
 const NetWorthDashboard = () => {
   const userId = import.meta.env.VITE_FIREBASE_TEST_ID;
 
-  const { savingsData, error } = useSavingsData(userId);
+  // Hooks for fetching data
+  const { savingsData } = useSavingsData(userId);
   const { bankAccountData } = useBankAccountData(userId);
   const { vehicleData } = useVehicleData(userId);
   const { realEstateData } = useRealEstateData(userId);
@@ -31,9 +33,12 @@ const NetWorthDashboard = () => {
     return data.reduce((total, item) => total + (Number(item[key]) || 0), 0);
   };
 
+  // Calculate the total balance for savings accounts
+  const additionalSavingsTotal = sumValues(savingsData, "balance");
+
   // Calculate Total Assets (sum of all positive "worths" or "current worths")
   const totalAssets =
-    sumValues(savingsData, "currentWorth") +
+    additionalSavingsTotal + // Include savings total
     sumValues(bankAccountData, "total") +
     sumValues(vehicleData, "currentWorth") +
     sumValues(realEstateData, "currentWorth") +
@@ -52,49 +57,43 @@ const NetWorthDashboard = () => {
   return (
     <div className="p-4 text-black">
       <h1 className="text-2xl font-bold mb-4 text-blue-300">Net Worth Dashboard</h1>
-      {error ? (
-        <p className="text-red-500">{error}</p>
-      ) : !loading ? (
+      {!loading ? (
         <>
-          <h3 className="text-lg font-semibold mb-2 text-blue-200">Assets:</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-
             {/* Individual Asset Categories */}
-            {/* Savings */}
             <Link to={"/savings"}>
               <div className="p-4 bg-gray-100 rounded shadow">
                 <h4 className="text-sm font-medium mb-1">Savings</h4>
                 <SavingsTotal savingsData={savingsData} />
               </div>
             </Link>
-            {/* Cash in Hand */}
             <Link to={"/bank-account"}>
               <div className="p-4 bg-gray-100 rounded shadow">
                 <h4 className="text-sm font-medium mb-1">Cash in Hand</h4>
-                <BankAccountTotal bankAccountData={bankAccountData} />
+                <BankAccountTotal
+                bankAccountData={bankAccountData}
+                savingsData={savingsData} // Pass savingsData to include HSA
+              />
               </div>
             </Link>
-            {/* Vehicles */}
             <Link to={"/vehicles"}>
               <div className="p-4 bg-gray-100 rounded shadow">
                 <h4 className="text-sm font-medium mb-1">Vehicles</h4>
                 <VehicleTotal vehicleData={vehicleData} />
               </div>
             </Link>
-            {/* Real Estate */}
             <Link to={"/real-estate"}>
               <div className="p-4 bg-gray-100 rounded shadow">
                 <h4 className="text-sm font-medium mb-1">Real Estate</h4>
                 <RealEstateTotal realEstateData={realEstateData} />
               </div>
             </Link>
-            {/* Investments */}
-            <div className="p-4 bg-gray-100 rounded shadow">
-              <Link to={"/investments"}></Link>
-              <h4 className="text-sm font-medium mb-1">Investments</h4>
-              <InvestmentTotal investmentData={investmentData} />
-            </div>
-            {/* Other Tangible Assets */}
+            <Link to={"/investments"}>
+              <div className="p-4 bg-gray-100 rounded shadow">
+                <h4 className="text-sm font-medium mb-1">Investments</h4>
+                <InvestmentTotal investmentData={investmentData} />
+              </div>
+            </Link>
             <Link to={"/other-assets"}>
               <div className="p-4 bg-gray-100 rounded shadow">
                 <h4 className="text-sm font-medium mb-1">Other Tangible Assets</h4>
@@ -113,7 +112,9 @@ const NetWorthDashboard = () => {
             otherAssetsData={otherAssetsData}
           />
         </>
-      ) : null}
+      ) : (
+        <LoadingIndicator />
+      )}
     </div>
   );
 };

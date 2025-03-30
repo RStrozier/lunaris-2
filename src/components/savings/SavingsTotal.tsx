@@ -8,11 +8,9 @@ const SavingsTotal = ({ savingsData }: SavingsTotalProps) => {
   const textColor = totalSavings >= 0 ? "text-green-500" : "text-red-500";
 
   return (
-    <div>
-      <p className={`text-lg font-bold ${textColor}`}>
+      <p className={`text-2xl font-bold ${textColor}`}>
         ${totalSavings.toLocaleString()}
       </p>
-    </div>
   );
 };
 

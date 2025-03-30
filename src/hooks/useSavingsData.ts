@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { fetchData } from "../firebase/firestoreUtils";
-import { useLoading } from "../context/LoadingContext"; // Use the global LoadingContext
+import { useLoading } from "../context/LoadingContext"; // Global loading context
+import { useError } from "../context/ErrorContext"; // Global error context
 
 interface Savings {
   id?: string;
@@ -11,28 +12,29 @@ interface Savings {
 
 const useSavingsData = (userId: string) => {
   const [savingsData, setSavingsData] = useState<Savings[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const { setLoading } = useLoading(); // Get global setLoading from LoadingContext
+  const { setLoading } = useLoading();
+  const { setError, clearError } = useError();
+
+  const fetchSavings = useCallback(async () => {
+    try {
+      setLoading(true);
+      clearError();
+      const data = await fetchData(`users/${userId}/savings`);
+      setSavingsData(data as Savings[]);
+    } catch (err) {
+      setError("Failed to fetch savings data.");
+    } finally {
+      setLoading(false);
+    }
+  }, [userId, setLoading, setError, clearError]);
 
   useEffect(() => {
-    const fetchSavings = async () => {
-      try {
-        setLoading(true); // Start global loading
-        const data = await fetchData(`users/${userId}/savings`);
-        setSavingsData(data as Savings[]);
-      } catch (err) {
-        setError("Failed to load savings data.");
-      } finally {
-        setLoading(false); // Stop global loading
-      }
-    };
-
     if (userId) {
       fetchSavings();
     }
-  }, [userId, setLoading]);
+  }, [userId, fetchSavings]);
 
-  return { savingsData, error }; // No local loading state, use global state instead
+  return { savingsData, refetchSavings: fetchSavings }; // Expose refetch function
 };
 
 export default useSavingsData;

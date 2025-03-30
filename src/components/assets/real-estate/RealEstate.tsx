@@ -1,21 +1,22 @@
-import{ useState } from "react";
+import { useState } from "react";
 import { addData } from "../../../firebase/firestoreUtils";
 import RealEstateForm from "./RealEstateForm";
 import RealEstateList from "./RealEstateList";
 import RealEstateTotal from "./RealEstateTotal";
 import useRealEstateData from "../../../hooks/useRealEstateData";
+import useGlobalError from "../../../hooks/useGlobalError";
 
 export interface RealEstate {
-    id?: string; // Firestore document ID
-    address: string; // Property address
-    type: "residential" | "commercial" | "land" | "other"; // Type of property
-    amountOwed: number; // Outstanding mortgage or loan
-    currentWorth: number; // Current market value
-  }
+  id?: string; // Firestore document ID
+  address: string; // Property address
+  type: "residential" | "commercial" | "land" | "other"; // Type of property
+  amountOwed: number; // Outstanding mortgage or loan
+  currentWorth: number; // Current market value
+}
 
 const RealEstate = () => {
   const userId = import.meta.env.VITE_FIREBASE_TEST_ID;
-  const { realEstateData, error, setRealEstateData } = useRealEstateData(userId);
+  const { realEstateData, setRealEstateData } = useRealEstateData(userId);
 
   const [newRealEstate, setNewRealEstate] = useState<RealEstate>({
     address: "",
@@ -24,6 +25,7 @@ const RealEstate = () => {
     currentWorth: 0,
   });
 
+  const [addError, setAddError] = useState<string | null>(null); // Local error for adding real estate
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -39,9 +41,13 @@ const RealEstate = () => {
         await addData(`users/${userId}/realEstate`, newRealEstate);
         setRealEstateData((prev) => [...prev, newRealEstate]);
         setNewRealEstate({ address: "", type: "residential", amountOwed: 0, currentWorth: 0 });
+        setAddError(null); // Clear any previous add errors
       } catch (err) {
         console.error("Failed to add real estate:", err);
+        setAddError("Failed to add real estate. Please try again.");
       }
+    } else {
+      setAddError("Please fill in all required fields correctly before adding.");
     }
   };
 
@@ -61,14 +67,8 @@ const RealEstate = () => {
       />
 
       {/* Total Net Worth */}
-      {error ? (
-        <p className="text-red-500">{error}</p>
-      ) : (
-        <>
-          <h3 className="font-bold">Total Net Worth Across All Properties</h3>
-          <RealEstateTotal realEstateData={realEstateData} />
-        </>
-      )}
+      <h3 className="font-bold mt-6 mb-4 text-gray-200">Total Net Worth Across All Properties</h3>
+      <RealEstateTotal realEstateData={realEstateData} />
 
       {/* Real Estate List */}
       <RealEstateList
