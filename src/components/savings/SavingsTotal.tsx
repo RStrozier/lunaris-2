@@ -1,15 +1,16 @@
+import { SavingsTotalProps } from "../../data/types";
 
-interface SavingsTotalProps {
-  savingsData: { balance: number }[];
-}
-
-const SavingsTotal = ({ savingsData }: SavingsTotalProps ) => {
+const SavingsTotal = ({ savingsData }: SavingsTotalProps) => {
+  // Calculate the total savings
   const totalSavings = savingsData.reduce((sum, savings) => sum + savings.balance, 0);
 
+  // Determine the text color based on the total savings
+  const textColor = totalSavings >= 0 ? "text-green-500" : "text-red-500";
+
   return (
-    <div className="mt-4">
-      <p className="text-lg">
-        <div>${totalSavings.toLocaleString()}</div>
+    <div>
+      <p className={`text-lg font-bold ${textColor}`}>
+        ${totalSavings.toLocaleString()}
       </p>
     </div>
   );

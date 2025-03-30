@@ -1,6 +1,6 @@
 import React from "react";
 import Bills from "../components/Bills";
-import Debt from "../components/Debt";
+import Debt from "../components/debt/Debt";
 import Income from "../components/Income";
 import Savings from "../components/savings/Savings";
 import Transactions from "../components/Transactions";
