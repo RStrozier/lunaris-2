@@ -41,7 +41,6 @@
     bankAccountData: BankAccount[]; // is a type of bank account
     userId: string;
     handleDeleteFromState: (id: string) => void;
-    error: string | null;
   }
 
   export interface BankAccountTotalProps {

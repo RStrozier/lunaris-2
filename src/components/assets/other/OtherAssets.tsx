@@ -4,8 +4,9 @@ import OtherAssetsForm from "./OtherAssetsForm";
 import OtherAssetsList from "./OtherAssetsList";
 import OtherAssetsTotal from "./OtherAssetsTotal";
 import useOtherAssetsData from "../../../hooks/useOtherAssetsData";
+import useGlobalError from "../../../hooks/useGlobalError";
 
- interface OtherAsset {
+interface OtherAsset {
   id?: string; // Firestore document ID
   name: string; // Name of the asset
   amountOwed: number; // Outstanding debt on the asset
@@ -14,8 +15,9 @@ import useOtherAssetsData from "../../../hooks/useOtherAssetsData";
 
 const OtherAssets = () => {
   const userId = import.meta.env.VITE_FIREBASE_TEST_ID;
+
   // Use custom hook to fetch other assets
-  const { otherAssetsData, error, setOtherAssetsData } = useOtherAssetsData(userId);
+  const { otherAssetsData, setOtherAssetsData } = useOtherAssetsData(userId);
 
   // State for new asset form
   const [newOtherAsset, setNewOtherAsset] = useState<OtherAsset>({
@@ -23,6 +25,9 @@ const OtherAssets = () => {
     amountOwed: 0,
     worth: 0,
   });
+
+  // Local error state for adding an asset
+  const [addError, setAddError] = useState<string | null>(null);
 
   // Handle input changes in the form
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,9 +45,13 @@ const OtherAssets = () => {
         await addData(`users/${userId}/otherAssets`, newOtherAsset);
         setOtherAssetsData((prev) => [...prev, newOtherAsset]);
         setNewOtherAsset({ name: "", amountOwed: 0, worth: 0 });
+        setAddError(null); // Clear any previous errors
       } catch (err) {
         console.error("Failed to add other asset:", err);
+        setAddError("Failed to add other asset. Please try again.");
       }
+    } else {
+      setAddError("Please fill in all required fields correctly before adding.");
     }
   };
 
@@ -63,14 +72,8 @@ const OtherAssets = () => {
       />
 
       {/* Total Net Worth */}
-      {error ? (
-        <p className="text-red-500">{error}</p>
-      ) : (
-        <>
-          <h3 className="font-bold">Total Net Worth Across All Other Assets</h3>
-          <OtherAssetsTotal otherAssetsData={otherAssetsData} />
-        </>
-      )}
+      <h3 className="font-bold mt-6 mb-4 text-gray-200">Total Net Worth Across All Other Assets</h3>
+      <OtherAssetsTotal otherAssetsData={otherAssetsData} />
 
       {/* Other Assets List */}
       <OtherAssetsList

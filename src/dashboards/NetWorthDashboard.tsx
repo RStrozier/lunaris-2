@@ -13,11 +13,12 @@ import OtherAssetsTotal from "../components/assets/other/OtherAssetsTotal";
 import useOtherAssetsData from "../hooks/useOtherAssetsData";
 import { Link } from "react-router-dom";
 import NetWorth from "../components/NetWorth";
+import LoadingIndicator from "../components/LoadingIndicator";
 
 const NetWorthDashboard = () => {
   const userId = import.meta.env.VITE_FIREBASE_TEST_ID;
 
-  // Hooks for fetching data hook handle the error fetching directly globally
+  // Hooks for fetching data
   const { savingsData } = useSavingsData(userId);
   const { bankAccountData } = useBankAccountData(userId);
   const { vehicleData } = useVehicleData(userId);
@@ -32,9 +33,12 @@ const NetWorthDashboard = () => {
     return data.reduce((total, item) => total + (Number(item[key]) || 0), 0);
   };
 
+  // Calculate the total balance for savings accounts
+  const additionalSavingsTotal = sumValues(savingsData, "balance");
+
   // Calculate Total Assets (sum of all positive "worths" or "current worths")
   const totalAssets =
-    sumValues(savingsData, "currentWorth") +
+    additionalSavingsTotal + // Include savings total
     sumValues(bankAccountData, "total") +
     sumValues(vehicleData, "currentWorth") +
     sumValues(realEstateData, "currentWorth") +
@@ -66,7 +70,10 @@ const NetWorthDashboard = () => {
             <Link to={"/bank-account"}>
               <div className="p-4 bg-gray-100 rounded shadow">
                 <h4 className="text-sm font-medium mb-1">Cash in Hand</h4>
-                <BankAccountTotal bankAccountData={bankAccountData} />
+                <BankAccountTotal
+                bankAccountData={bankAccountData}
+                savingsData={savingsData} // Pass savingsData to include HSA
+              />
               </div>
             </Link>
             <Link to={"/vehicles"}>
@@ -106,7 +113,7 @@ const NetWorthDashboard = () => {
           />
         </>
       ) : (
-        <p>Loading...</p>
+        <LoadingIndicator />
       )}
     </div>
   );

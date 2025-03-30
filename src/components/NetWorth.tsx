@@ -44,7 +44,7 @@ const NetWorth = ({
 
   // Calculate Total Assets (sum of all positive "worths" or "current worths")
   const totalAssets =
-    sumValues(savingsData, "currentWorth") +
+    sumValues(savingsData, "balance") + 
     sumValues(bankAccountData, "total") +
     sumValues(vehicleData, "currentWorth") +
     sumValues(realEstateData, "currentWorth") +

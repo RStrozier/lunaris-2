@@ -5,6 +5,7 @@ import SavingsTotal from "./SavingsTotal";
 import { addData } from "../../firebase/firestoreUtils";
 import useSavingsData from "../../hooks/useSavingsData";
 import LoadingIndicator from "../LoadingIndicator";
+import SavingsMessage from "./SavingsMessage";
 
 export interface Savings {
   id?: string;
@@ -50,7 +51,18 @@ const Savings = () => {
   return (
     <div className="p-4">
       <LoadingIndicator />
-      <h2 className="text-xl font-bold">Savings Management</h2>
+     {/* Savings Information */}
+      <SavingsMessage />
+      <div className="p-4 bg-gray-200 rounded-lg shadow-md text-center">
+      <h3 className="text-sm font-medium text-gray-400 mb-2">Total Savings</h3>
+      <SavingsTotal savingsData={savingsData} />
+      </div>
+
+      <SavingsList
+        savingsData={savingsData}
+        userId={userId}
+        handleDeleteFromState={handleDeleteFromState}
+      />
 
       <SavingsForm
         newSavings={newSavings}
@@ -58,14 +70,6 @@ const Savings = () => {
         handleAddSavings={handleAddSavings}
       />
 
-      <h3 className="font-bold">Total Savings</h3>
-      <SavingsTotal savingsData={savingsData} />
-
-      <SavingsList
-        savingsData={savingsData}
-        userId={userId}
-        handleDeleteFromState={handleDeleteFromState}
-      />
     </div>
   );
 };
