@@ -1,4 +1,3 @@
-import React from "react";
 import { deleteData } from "../../firebase/firestoreUtils";
 
 interface DeleteFromFirestoreBtnProps {
@@ -8,8 +7,10 @@ interface DeleteFromFirestoreBtnProps {
 }
 
 const DeleteFromFirestoreBtn = ({
-  collectionName, itemId, onDelete,
-}: DeleteFromFirestoreBtnProps ) => {
+  collectionName, 
+  itemId, 
+  onDelete,
+}: DeleteFromFirestoreBtnProps) => {
   const handleDelete = async () => {
     const confirmDelete = window.confirm("Are you sure you want to delete this item?");
     if (!confirmDelete) return;
@@ -19,6 +20,8 @@ const DeleteFromFirestoreBtn = ({
       await deleteData(collectionName, itemId);
       // Call the callback to update local state
       onDelete(itemId);
+      // Reload the page after successful deletion
+      window.location.reload();
     } catch (error) {
       console.error("Error deleting document:", error);
     }

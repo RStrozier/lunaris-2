@@ -1,7 +1,7 @@
 
 const DashboardWrapper = () => {
   return (
-    <div>DashboardWrapper</div>
+    <div>Dashboard Wrapper</div>
   )
 }
 

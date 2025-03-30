@@ -5,6 +5,7 @@ import DeleteFromFirestoreBtn from "./buttons/DeleteFromFirestoreBtn";
 interface Income {
   id?: string; // Optional because Firestore assigns it
   name: string;
+  type: "Salary" | "Freelance" | "Gift" | "Other";
   amount: number;
   frequency: "weekly" | "biweekly" | "monthly";
   payDate?: string; // Optional pay date
@@ -14,6 +15,7 @@ function Income() {
   const [incomeData, setIncomeData] = useState<Income[]>([]);
   const [newIncome, setNewIncome] = useState<Income>({
     name: "",
+    type: "Salary",
     amount: 0,
     frequency: "monthly",
     payDate: "",
@@ -56,7 +58,7 @@ function Income() {
       try {
         await addData(`users/${userId}/income`, newIncome);
         setIncomeData([...incomeData, newIncome]);
-        setNewIncome({ name: "", amount: 0, frequency: "monthly", payDate: "" });
+        setNewIncome({ name: "", amount: 0, type: "Salary", frequency: "monthly", payDate: "" });
       } catch (err) {
         setError("Failed to add income.");
       }
@@ -112,7 +114,7 @@ function Income() {
 
   return (
     <div className="p-4">
-      <h3 className="text-xl font-bold">Income Management</h3>
+      <h2 className="text-xl font-bold">Income Management</h2>
 
       <div className="mt-4">
         <legend>
@@ -136,6 +138,20 @@ function Income() {
             onChange={handleChange}
             className="border p-2 mr-2"
           />
+        </legend>
+        <legend>
+          Type
+          <select
+            name="type"
+            value={newIncome.type}
+            onChange={handleChange}
+            className="border p-2"
+          >
+            <option value="Salary">Salary</option>
+            <option value="Freelance">Freelance</option>
+            <option value="Gift">Gift</option>
+            <option value="Other">Other</option>
+          </select>
         </legend>
         <legend>
           Frequency
