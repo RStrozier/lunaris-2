@@ -1,14 +1,19 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "strict": true,
-    "jsx": "react-jsx",
-    "moduleResolution": "Node",
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "target": "ESNext",                  // Target modern JavaScript features
+    "module": "ESNext",                  // Use ES module syntax
+    "strict": true,                      // Enable strict type-checking
+    "jsx": "react-jsx",                  // Use React JSX runtime (React 17+)
+    "moduleResolution": "node",          // Resolve modules like Node.js
+    "esModuleInterop": true,             // Enable compatibility with CommonJS modules
+    "allowSyntheticDefaultImports": true, // Allow default imports for modules using `export =`
+    "resolveJsonModule": true,           // Allow importing JSON files
+    "skipLibCheck": true,                // Skip type-checking for declaration files
+    "forceConsistentCasingInFileNames": true, // Enforce consistent casing in imports
+    "isolatedModules": true,             // Required for Vite compatibility
+    "noEmit": true,                      // Prevent emitting `.js` files (Vite handles bundling)
+    "allowImportingTsExtensions": true   // Allow explicit `.ts` and `.tsx` imports
   },
-  "include": ["src"],
-  "exclude": ["node_modules"]
+  "include": ["src"],                    // Include all files in the "src" directory
+  "exclude": ["node_modules", "dist"]    // Exclude "node_modules" and build output
 }
