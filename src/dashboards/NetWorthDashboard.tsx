@@ -8,13 +8,13 @@ const NetWorthDashboard = () => {
   const { loading } = useLoading();
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Net Worth Dashboard</h1>
+    <div className="p- text-black">
+      <h1 className="text-2xl font-bold mb-4 text-blue-300">Net Worth Dashboard</h1>
       {error ? (
         <p className="text-red-500">{error}</p>
       ) : !loading ? (
         <>
-          <h3 className="text-lg font-semibold mb-2">Assets:</h3>
+          <h3 className="text-lg font-semibold mb-2 text-blue-200">Assets:</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
             <div className="p-4 bg-gray-100 rounded shadow">
               <h4 className="text-sm font-medium mb-1">Savings</h4>
