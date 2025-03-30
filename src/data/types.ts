@@ -125,7 +125,6 @@ export interface SavingsListProps {
   }[];
   userId: string;
   handleDeleteFromState: (id: string) => void;
-  error: string | null;
 }
 
 export interface SavingsTotalProps {

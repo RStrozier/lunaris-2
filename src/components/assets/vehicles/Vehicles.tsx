@@ -5,11 +5,18 @@ import VehicleForm from "./VehicleForm";
 import VehicleList from "./VehicleList";
 import VehicleTotal from "./VehicleTotal";
 import { Vehicle } from "../../../data/types";
+import { useError } from "../../../context/ErrorContext"; // Import global error context
+import { useLoading } from "../../../context/LoadingContext"; // Import global loading context
 
 const Vehicles = () => {
   const userId = import.meta.env.VITE_FIREBASE_TEST_ID;
-  const { vehicleData, error, setVehicleData } = useVehicleData(userId);
+  // Fetch vehicle data using the custom hook
+  const { vehicleData, setVehicleData } = useVehicleData(userId);
+  // Global error and loading handling
+  const { error } = useError(); // Access global error state
+  const { setLoading } = useLoading(); // Access global loading functions
 
+  // State for new vehicle form
   const [newVehicle, setNewVehicle] = useState<Vehicle>({
     year: 0,
     make: "",
@@ -19,6 +26,7 @@ const Vehicles = () => {
     currentWorth: 0,
   });
 
+  // Handle input changes in the form
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setNewVehicle((prev) => ({
@@ -30,20 +38,32 @@ const Vehicles = () => {
     }));
   };
 
+  // Add a new vehicle to the database
   const handleAddVehicle = async () => {
     if (newVehicle.make && newVehicle.model && newVehicle.currentWorth >= 0) {
       try {
+        setLoading(true); // Start global loading
         await addData(`users/${userId}/vehicles`, newVehicle);
-        setVehicleData((prev) => [...prev, newVehicle]);
-        setNewVehicle({ year: 0, make: "", model: "", type: "car", amountOwed: 0, currentWorth: 0 });
+        setVehicleData((prev) => [...prev, newVehicle]); // Update state with the new vehicle
+        setNewVehicle({
+          year: 0,
+          make: "",
+          model: "",
+          type: "car",
+          amountOwed: 0,
+          currentWorth: 0,
+        });
       } catch (err) {
         console.error("Failed to add vehicle:", err);
+      } finally {
+        setLoading(false); // Stop global loading
       }
     }
   };
 
+  // Handle deletion of a vehicle (state update logic should be added)
   const handleDeleteFromState = (id: string) => {
-    console.warn("handleDeleteFromState: Add refetch logic if needed.");
+    setVehicleData((prev) => prev.filter((vehicle) => vehicle.id !== id));
   };
 
   return (
@@ -59,7 +79,7 @@ const Vehicles = () => {
 
       {/* Total Net Worth */}
       {error ? (
-        <p className="text-red-500">{error}</p>
+        <p className="text-red-500">{error}</p> // Display global error
       ) : (
         <>
           <h3 className="font-bold">Total Net Worth Across All Vehicles</h3>
