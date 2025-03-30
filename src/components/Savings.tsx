@@ -71,6 +71,9 @@ const Savings = () => {
     setSavingsData((prev) => prev.filter((savings) => savings.id !== id));
   };
 
+  // Calculate total savings
+  const totalSavings = savingsData.reduce((sum, savings) => sum + savings.balance, 0);
+
   return (
     <div className="p-4">
       <h2 className="text-xl font-bold">Savings Management</h2>
@@ -116,6 +119,14 @@ const Savings = () => {
         <button onClick={handleAddSavings} className="bg-blue-500 text-white p-2 ml-2">
           Add
         </button>
+      </div>
+
+      {/* Display total savings */}
+      <div className="mt-4">
+        <h3 className="font-bold">Total Savings</h3>
+        <p className="text-lg">
+          <strong>${totalSavings.toLocaleString()}</strong>
+        </p>
       </div>
 
       {/* Display savings list */}

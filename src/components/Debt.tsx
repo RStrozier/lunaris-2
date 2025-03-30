@@ -75,6 +75,9 @@ const Debt = () => {
     setDebtData((prev) => prev.filter((debt) => debt.id !== id));
   };
 
+  // Calculate the total debt
+  const totalDebt = debtData.reduce((sum, debt) => sum + debt.totalAmount, 0);
+
   return (
     <div className="p-4">
       <h2 className="text-xl font-bold">Debt Management</h2>
@@ -138,6 +141,14 @@ const Debt = () => {
         <button onClick={handleAddDebt} className="bg-blue-500 text-white p-2 ml-2">
           Add
         </button>
+      </div>
+
+      {/* Display total debt */}
+      <div className="mt-4">
+        <h3 className="font-bold">Total Debt</h3>
+        <p className="text-lg">
+          <strong>${totalDebt.toLocaleString()}</strong>
+        </p>
       </div>
 
       {/* Display debt list */}

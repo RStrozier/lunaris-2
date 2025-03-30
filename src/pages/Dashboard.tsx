@@ -5,6 +5,7 @@ import Savings from "../components/Savings"
 import Transactions from "../components/Transactions"
 
 // main dashboard to display insights
+// TODO: RENDER  ALL DASHBOARDS ON THIS PAGE
 const Dashboard = () => {
   return (
     <>

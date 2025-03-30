@@ -82,6 +82,28 @@ const Transactions = () => {
     setTransactionsData((prev) => prev.filter((transaction) => transaction.id !== id));
   };
 
+  // Calculate total for the past 30 days
+  const currentDate = new Date();
+  const past30DaysDate = new Date();
+  past30DaysDate.setDate(currentDate.getDate() - 30);
+
+  const totalPast30DaysTransactions = transactionsData
+    .filter((transaction) => {
+      const transactionDate = new Date(transaction.date);
+      return transactionDate >= past30DaysDate && transactionDate <= currentDate;
+    })
+    .reduce((sum, transaction) => sum + transaction.amount, 0);
+
+  // Calculate year-to-date (YTD) total
+  const startOfYearDate = new Date(currentDate.getFullYear(), 0, 1); // January 1st of the current year
+
+  const totalYTDTransactions = transactionsData
+    .filter((transaction) => {
+      const transactionDate = new Date(transaction.date);
+      return transactionDate >= startOfYearDate && transactionDate <= currentDate;
+    })
+    .reduce((sum, transaction) => sum + transaction.amount, 0);
+
   return (
     <div className="p-4">
       <h2 className="text-xl font-bold">Transactions Management</h2>
@@ -143,6 +165,17 @@ const Transactions = () => {
         <button onClick={handleAddTransaction} className="bg-blue-500 text-white p-2 ml-2">
           Add
         </button>
+      </div>
+
+      {/* Display totals */}
+      <div className="mt-4">
+        <h3 className="font-bold">Transaction Totals</h3>
+        <p className="text-lg">
+          <strong>Past 30 Days Transactions: ${totalPast30DaysTransactions.toLocaleString()}</strong>
+        </p>
+        <p className="text-lg">
+          <strong>Year to Date Transactions (YTD): ${totalYTDTransactions.toLocaleString()}</strong>
+        </p>
       </div>
 
       {/* Display transactions list */}

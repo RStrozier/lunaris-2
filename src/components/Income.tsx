@@ -5,20 +5,18 @@ import DeleteFromFirestoreBtn from "./buttons/DeleteFromFirestoreBtn";
 interface Income {
   id?: string; // Optional because Firestore assigns it
   name: string;
-  type: "fixed" | "variable";
   amount: number;
   frequency: "weekly" | "biweekly" | "monthly";
-  startDate?: string; // Optional start date
+  payDate?: string; // Optional pay date
 }
 
 function Income() {
   const [incomeData, setIncomeData] = useState<Income[]>([]);
   const [newIncome, setNewIncome] = useState<Income>({
     name: "",
-    type: "fixed",
     amount: 0,
     frequency: "monthly",
-    startDate: "",
+    payDate: "",
   });
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -54,25 +52,24 @@ function Income() {
   };
 
   const handleAddIncome = async () => {
-    if (newIncome.name && newIncome.amount > 0 && newIncome.startDate) {
+    if (newIncome.name && newIncome.amount > 0 && newIncome.payDate) {
       try {
         await addData(`users/${userId}/income`, newIncome);
         setIncomeData([...incomeData, newIncome]);
-        setNewIncome({ name: "", type: "fixed", amount: 0, frequency: "monthly", startDate: "" });
+        setNewIncome({ name: "", amount: 0, frequency: "monthly", payDate: "" });
       } catch (err) {
         setError("Failed to add income.");
       }
     }
   };
 
-  // Handle local state update after deletion
   const handleDeleteFromState = (id: string) => {
     setIncomeData((prev) => prev.filter((income) => income.id !== id));
   };
 
-  const calculateNextPayday = (frequency: string, startDate: string): string => {
+  const calculateNextPayday = (frequency: string, payDate: string): string => {
     const today = new Date();
-    const start = new Date(startDate);
+    const start = new Date(payDate);
 
     if (start > today) return start.toISOString().split("T")[0];
 
@@ -90,6 +87,29 @@ function Income() {
     return nextPayday.toISOString().split("T")[0];
   };
 
+  // Calculate total income
+  const totalMonthlyIncome = incomeData.reduce((sum, income) => {
+    if (income.frequency === "weekly") {
+      return sum + income.amount * 4.33; // Weekly to monthly
+    } else if (income.frequency === "biweekly") {
+      return sum + income.amount * 2; // Biweekly to monthly
+    } else if (income.frequency === "monthly") {
+      return sum + income.amount; // Monthly is already monthly
+    }
+    return sum;
+  }, 0);
+
+  const totalYearlyIncome = incomeData.reduce((sum, income) => {
+    if (income.frequency === "weekly") {
+      return sum + income.amount * 52; // Weekly to yearly
+    } else if (income.frequency === "biweekly") {
+      return sum + income.amount * 26; // Biweekly to yearly
+    } else if (income.frequency === "monthly") {
+      return sum + income.amount * 12; // Monthly to yearly
+    }
+    return sum;
+  }, 0);
+
   return (
     <div className="p-4">
       <h3 className="text-xl font-bold">Income Management</h3>
@@ -105,18 +125,6 @@ function Income() {
             onChange={handleChange}
             className="border p-2 mr-2"
           />
-        </legend>
-        <legend>
-          Type
-          <select
-            name="type"
-            value={newIncome.type}
-            onChange={handleChange}
-            className="border p-2 mr-2"
-          >
-            <option value="fixed">Fixed</option>
-            <option value="variable">Variable</option>
-          </select>
         </legend>
         <legend>
           Amount
@@ -143,11 +151,11 @@ function Income() {
           </select>
         </legend>
         <legend>
-          Start Date
+          Pay Date
           <input
             type="date"
-            name="startDate"
-            value={newIncome.startDate}
+            name="payDate"
+            value={newIncome.payDate}
             onChange={handleChange}
             className="border p-2"
           />
@@ -155,6 +163,17 @@ function Income() {
         <button onClick={handleAddIncome} className="bg-blue-500 text-white p-2 ml-2">
           Add
         </button>
+      </div>
+
+      {/* Display total incomes */}
+      <div className="mt-4">
+        <h3 className="font-bold">Total Income</h3>
+        <p className="text-lg">
+          <strong>Monthly: ${totalMonthlyIncome.toLocaleString()}</strong>
+        </p>
+        <p className="text-lg">
+          <strong>Yearly: ${totalYearlyIncome.toLocaleString()}</strong>
+        </p>
       </div>
 
       <div className="mt-4">
@@ -167,12 +186,12 @@ function Income() {
           <ul>
             {incomeData.map((income) => (
               <li key={income.id} className="p-2 border-b">
-                {income.name} - ${income.amount} ({income.type}, {income.frequency})
+                {income.name} - ${income.amount} ({income.frequency})
                 <br />
                 Next Payday:{" "}
-                {income.startDate
-                  ? calculateNextPayday(income.frequency, income.startDate)
-                  : "Start date not set"}
+                {income.payDate
+                  ? calculateNextPayday(income.frequency, income.payDate)
+                  : "Pay date not set"}
                 <DeleteFromFirestoreBtn
                   collectionName={`users/${userId}/income`}
                   itemId={income.id!}

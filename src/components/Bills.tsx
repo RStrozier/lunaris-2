@@ -17,7 +17,6 @@ interface Bill {
     | "Grocery"
     | "Medical";
   amount: number;
-  isRange: boolean; // Whether the amount is a range
   dueDate: string; // e.g., "YYYY-MM-DD"
   occurance: "weekly" | "biweekly" | "monthly" | "yearly"; // Frequency options
 }
@@ -28,7 +27,6 @@ const Bills = () => {
     name: "",
     category: "Housing",
     amount: 0,
-    isRange: false,
     dueDate: "",
     occurance: "monthly",
   });
@@ -63,12 +61,7 @@ const Bills = () => {
     const { name, value } = e.target;
     setNewBill((prev) => ({
       ...prev,
-      [name]:
-        name === "amount" || name === "isRange"
-          ? name === "isRange"
-            ? value === "true"
-            : Number(value)
-          : value,
+      [name]: name === "amount" ? Number(value) : value,
     }));
   };
 
@@ -82,7 +75,6 @@ const Bills = () => {
           name: "",
           category: "Housing",
           amount: 0,
-          isRange: false,
           dueDate: "",
           occurance: "monthly",
         });
@@ -96,6 +88,56 @@ const Bills = () => {
   const handleDeleteFromState = (id: string) => {
     setBillsData((prev) => prev.filter((bill) => bill.id !== id));
   };
+
+  // Calculate the next due date
+  const calculateNextDueDate = (dueDate: string, occurance: string): string => {
+    const today = new Date();
+    let nextDueDate = new Date(dueDate);
+
+    while (nextDueDate <= today) {
+      if (occurance === "weekly") {
+        nextDueDate.setDate(nextDueDate.getDate() + 7);
+      } else if (occurance === "biweekly") {
+        nextDueDate.setDate(nextDueDate.getDate() + 14);
+      } else if (occurance === "monthly") {
+        nextDueDate.setMonth(nextDueDate.getMonth() + 1);
+      } else if (occurance === "yearly") {
+        nextDueDate.setFullYear(nextDueDate.getFullYear() + 1);
+      }
+    }
+
+    return nextDueDate.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+  };
+
+  // Calculate total monthly bills
+  const totalMonthlyBills = billsData.reduce((sum, bill) => {
+    let normalizedAmount = bill.amount;
+
+    if (bill.occurance === "weekly") {
+      normalizedAmount *= 4.33; // Weekly to monthly
+    } else if (bill.occurance === "biweekly") {
+      normalizedAmount *= 2; // Biweekly to monthly
+    } else if (bill.occurance === "yearly") {
+      normalizedAmount /= 12; // Yearly to monthly
+    } // Monthly bills are already in monthly terms
+
+    return sum + normalizedAmount;
+  }, 0);
+
+  // Calculate total yearly bills
+  const totalYearlyBills = billsData.reduce((sum, bill) => {
+    let normalizedAmount = bill.amount;
+
+    if (bill.occurance === "weekly") {
+      normalizedAmount *= 52; // Weekly to yearly
+    } else if (bill.occurance === "biweekly") {
+      normalizedAmount *= 26; // Biweekly to yearly
+    } else if (bill.occurance === "monthly") {
+      normalizedAmount *= 12; // Monthly to yearly
+    } // Yearly bills are already in yearly terms
+
+    return sum + normalizedAmount;
+  }, 0);
 
   return (
     <div className="p-4">
@@ -144,17 +186,8 @@ const Bills = () => {
             className="border p-2 mr-2"
           />
         </legend>
-        <select
-          name="isRange"
-          value={String(newBill.isRange)}
-          onChange={handleChange}
-          className="border p-2 mr-2"
-        >
-          <option value="false">Fixed Amount</option>
-          <option value="true">Range</option>
-        </select>
         <legend>
-          Due Date
+          Next Due Date
           <input
             type="date"
             name="dueDate"
@@ -182,6 +215,17 @@ const Bills = () => {
         </button>
       </div>
 
+      {/* Display total bills */}
+      <div className="mt-4">
+        <h3 className="font-bold">Total Bills</h3>
+        <p className="text-lg">
+          <strong>Monthly Bill Total: ${totalMonthlyBills.toLocaleString()}</strong>
+        </p>
+        <p className="text-lg">
+          <strong>Yearly Bill Total: ${totalYearlyBills.toLocaleString()}</strong>
+        </p>
+      </div>
+
       {/* Display bills list */}
       <div className="mt-4">
         <h3 className="font-bold">Bills List</h3>
@@ -195,7 +239,7 @@ const Bills = () => {
               <li key={bill.id} className="p-2 border-b">
                 {bill.name} - ${bill.amount} ({bill.category}, {bill.occurance})
                 <br />
-                {bill.isRange ? "Range" : "Fixed Amount"}, Due Date: {bill.dueDate}
+                Next Due Date: {calculateNextDueDate(bill.dueDate, bill.occurance)}
                 <DeleteFromFirestoreBtn
                   collectionName={`users/${userId}/bills`}
                   itemId={bill.id!}
