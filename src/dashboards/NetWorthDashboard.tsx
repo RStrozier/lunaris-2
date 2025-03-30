@@ -1,14 +1,56 @@
+import { useLoading } from "../context/LoadingContext";
 import SavingsTotal from "../components/savings/SavingsTotal";
 import useSavingsData from "../hooks/useSavingsData";
-import { useLoading } from "../context/LoadingContext";
+import BankAccountTotal from "../components/assets/banking/BankAccountTotal";
+import useBankAccountData from "../hooks/useBankAccountData";
+import VehicleTotal from "../components/assets/vehicles/VehicleTotal";
+import useVehicleData from "../hooks/useVehicleData";
+import RealEstateTotal from "../components/assets/real-estate/RealEstateTotal";
+import useRealEstateData from "../hooks/useRealEstateData";
+import useInvestmentData from "../hooks/useInvestmentData";
+import InvestmentTotal from "../components/assets/investments/InvestmentTotal";
+import OtherAssetsTotal from "../components/assets/other/OtherAssetsTotal";
+import useOtherAssetsData from "../hooks/useOtherAssetsData";
+import { Link } from "react-router-dom";
+import NetWorth from "../components/NetWorth";
 
 const NetWorthDashboard = () => {
   const userId = import.meta.env.VITE_FIREBASE_TEST_ID;
+
   const { savingsData, error } = useSavingsData(userId);
+  const { bankAccountData } = useBankAccountData(userId);
+  const { vehicleData } = useVehicleData(userId);
+  const { realEstateData } = useRealEstateData(userId);
+  const { investmentData } = useInvestmentData(userId);
+  const { otherAssetsData } = useOtherAssetsData(userId);
+
   const { loading } = useLoading();
 
+  // Helper function for summing up key values in an array of objects
+  const sumValues = (data: any[], key: string) => {
+    return data.reduce((total, item) => total + (Number(item[key]) || 0), 0);
+  };
+
+  // Calculate Total Assets (sum of all positive "worths" or "current worths")
+  const totalAssets =
+    sumValues(savingsData, "currentWorth") +
+    sumValues(bankAccountData, "total") +
+    sumValues(vehicleData, "currentWorth") +
+    sumValues(realEstateData, "currentWorth") +
+    sumValues(investmentData, "currentValue") +
+    sumValues(otherAssetsData, "worth");
+
+  // Calculate Total Liabilities (sum of all "amount owed" fields)
+  const totalLiabilities =
+    sumValues(vehicleData, "amountOwed") +
+    sumValues(realEstateData, "amountOwed") +
+    sumValues(otherAssetsData, "amountOwed");
+
+  // Calculate Net Worth
+  const netWorth = totalAssets - totalLiabilities;
+
   return (
-    <div className="p- text-black">
+    <div className="p-4 text-black">
       <h1 className="text-2xl font-bold mb-4 text-blue-300">Net Worth Dashboard</h1>
       {error ? (
         <p className="text-red-500">{error}</p>
@@ -16,36 +58,60 @@ const NetWorthDashboard = () => {
         <>
           <h3 className="text-lg font-semibold mb-2 text-blue-200">Assets:</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+
+            {/* Individual Asset Categories */}
+            {/* Savings */}
+            <Link to={"/savings"}>
+              <div className="p-4 bg-gray-100 rounded shadow">
+                <h4 className="text-sm font-medium mb-1">Savings</h4>
+                <SavingsTotal savingsData={savingsData} />
+              </div>
+            </Link>
+            {/* Cash in Hand */}
+            <Link to={"/bank-account"}>
+              <div className="p-4 bg-gray-100 rounded shadow">
+                <h4 className="text-sm font-medium mb-1">Cash in Hand</h4>
+                <BankAccountTotal bankAccountData={bankAccountData} />
+              </div>
+            </Link>
+            {/* Vehicles */}
+            <Link to={"/vehicles"}>
+              <div className="p-4 bg-gray-100 rounded shadow">
+                <h4 className="text-sm font-medium mb-1">Vehicles</h4>
+                <VehicleTotal vehicleData={vehicleData} />
+              </div>
+            </Link>
+            {/* Real Estate */}
+            <Link to={"/real-estate"}>
+              <div className="p-4 bg-gray-100 rounded shadow">
+                <h4 className="text-sm font-medium mb-1">Real Estate</h4>
+                <RealEstateTotal realEstateData={realEstateData} />
+              </div>
+            </Link>
+            {/* Investments */}
             <div className="p-4 bg-gray-100 rounded shadow">
-              <h4 className="text-sm font-medium mb-1">Savings</h4>
-              <SavingsTotal savingsData={savingsData} />
-            </div>
-            <div className="p-4 bg-gray-100 rounded shadow">
-              <h4 className="text-sm font-medium mb-1">Cash on Hand</h4>
-              <SavingsTotal savingsData={savingsData} />
-            </div>
-            <div className="p-4 bg-gray-100 rounded shadow">
-              <h4 className="text-sm font-medium mb-1">Vehicles</h4>
-              <SavingsTotal savingsData={savingsData} />
-            </div>
-            <div className="p-4 bg-gray-100 rounded shadow">
-              <h4 className="text-sm font-medium mb-1">Real Estate</h4>
-              <SavingsTotal savingsData={savingsData} />
-            </div>
-            <div className="p-4 bg-gray-100 rounded shadow">
+              <Link to={"/investments"}></Link>
               <h4 className="text-sm font-medium mb-1">Investments</h4>
-              <SavingsTotal savingsData={savingsData} />
+              <InvestmentTotal investmentData={investmentData} />
             </div>
-            <div className="p-4 bg-gray-100 rounded shadow">
-              <h4 className="text-sm font-medium mb-1">Other Real Estate</h4>
-              <SavingsTotal savingsData={savingsData} />
-            </div>
-            {/* Total Assets */}
-            <div className="p-4 bg-blue-100 rounded shadow col-span-full">
-              <h4 className="text-sm font-medium mb-1">Total Assets</h4>
-              <SavingsTotal savingsData={savingsData} />
-            </div>
+            {/* Other Tangible Assets */}
+            <Link to={"/other-assets"}>
+              <div className="p-4 bg-gray-100 rounded shadow">
+                <h4 className="text-sm font-medium mb-1">Other Tangible Assets</h4>
+                <OtherAssetsTotal otherAssetsData={otherAssetsData} />
+              </div>
+            </Link>
           </div>
+
+          {/* Net Worth Section */}
+          <NetWorth
+            savingsData={savingsData}
+            bankAccountData={bankAccountData}
+            vehicleData={vehicleData}
+            realEstateData={realEstateData}
+            investmentData={investmentData}
+            otherAssetsData={otherAssetsData}
+          />
         </>
       ) : null}
     </div>

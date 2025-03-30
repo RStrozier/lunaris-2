@@ -1,13 +1,4 @@
-
-interface SavingsFormProps {
-  newSavings: {
-    name: string;
-    accountType: string;
-    balance: number;
-  };
-  handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
-  handleAddSavings: () => void;
-}
+import { SavingsFormProps } from "../../data/types";
 
 const SavingsForm = ({ newSavings, handleChange, handleAddSavings }: SavingsFormProps) => {
   return (

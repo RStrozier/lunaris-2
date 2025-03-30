@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import SavingsForm from "./SavingsForm";
 import SavingsList from "./SavingsList";
 import SavingsTotal from "./SavingsTotal";
@@ -6,7 +6,7 @@ import { addData } from "../../firebase/firestoreUtils";
 import useSavingsData from "../../hooks/useSavingsData";
 import LoadingIndicator from "../LoadingIndicator"; 
 
-interface Savings {
+export interface Savings {
   id?: string;
   name: string;
   accountType: "Savings" | "HSA" | "Investment" | "Retirement";

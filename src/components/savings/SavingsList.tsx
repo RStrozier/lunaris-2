@@ -1,17 +1,6 @@
 import DeleteFromFirestoreBtn from "../buttons/DeleteFromFirestoreBtn";
 import { useLoading } from "../../context/LoadingContext";
-
-interface SavingsListProps {
-  savingsData: {
-    id?: string;
-    name: string;
-    accountType: string;
-    balance: number;
-  }[];
-  userId: string;
-  handleDeleteFromState: (id: string) => void;
-  error: string | null;
-}
+import { SavingsListProps } from "../../data/types";
 
 const SavingsList = ({
   savingsData,
@@ -19,8 +8,8 @@ const SavingsList = ({
   handleDeleteFromState,
   error,
 }: SavingsListProps) => {
+  
   const { loading } = useLoading(); // Access the global loading state
-
   if (loading) {
     return null; // Let the global LoadingIndicator handle the loading UI
   }
