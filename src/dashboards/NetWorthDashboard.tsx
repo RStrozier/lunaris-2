@@ -12,7 +12,7 @@ import InvestmentTotal from "../components/assets/investments/InvestmentTotal";
 import OtherAssetsTotal from "../components/assets/other/OtherAssetsTotal";
 import useOtherAssetsData from "../hooks/useOtherAssetsData";
 import { Link } from "react-router-dom";
-import NetWorth from "../components/NetWorth";
+import NetWorth from "../components/net-worth/NetWorth";
 import LoadingIndicator from "../components/LoadingIndicator";
 
 const NetWorthDashboard = () => {
@@ -59,7 +59,7 @@ const NetWorthDashboard = () => {
       <h1 className="text-2xl font-bold mb-4 text-blue-300">Net Worth Dashboard</h1>
       {!loading ? (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+          <div className="grid grid-cols-3  gap-2 mb-4">
             {/* Individual Asset Categories */}
             <Link to={"/savings"}>
               <div className="p-4 bg-gray-100 rounded shadow">
@@ -96,7 +96,7 @@ const NetWorthDashboard = () => {
             </Link>
             <Link to={"/other-assets"}>
               <div className="p-4 bg-gray-100 rounded shadow">
-                <h4 className="text-sm font-medium mb-1">Other Tangible Assets</h4>
+                <h4 className="text-sm font-medium mb-1">Other Assets</h4>
                 <OtherAssetsTotal otherAssetsData={otherAssetsData} />
               </div>
             </Link>

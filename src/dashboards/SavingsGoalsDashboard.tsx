@@ -1,7 +1,9 @@
 
 const SavingsGoalsDashboard = () => {
   return (
-    <div>SavingsGoalsDashboard</div>
+    <>
+        <div>Savings Goals Dashboard</div>
+    </>
   )
 }
 

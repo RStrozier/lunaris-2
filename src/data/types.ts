@@ -159,3 +159,36 @@ export interface DebtFormProps {
 export interface DebtTotalProps {
   debtData: Debt[];
 }
+export interface Bill {
+  id?: string;
+  name: string;
+  category: string;
+  amount: number;
+  dueDate: string;
+  occurance: string;
+}
+
+export interface BillsListProps {
+  billsData: Bill[];
+  userId: string;
+  handleDeleteFromState: (id: string) => void;
+  calculateNextDueDate: (dueDate: string, occurance: string) => string;
+}
+
+
+export interface BillsFormProps {
+  newBill: {
+    name: string;
+    category: string;
+    amount: number;
+    dueDate: string;
+    occurance: string;
+  };
+  handleChange: React.ChangeEventHandler<HTMLInputElement | HTMLSelectElement>;
+  handleAddBill: () => void;
+}
+
+export interface BillsTotalProps {
+  totalMonthlyBills: number;
+  totalYearlyBills: number;
+}

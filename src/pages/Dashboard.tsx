@@ -1,7 +1,7 @@
 import React from "react";
-import Bills from "../components/Bills";
+import Bills from "../components/bills/Bills";
 import Debt from "../components/debt/Debt";
-import Income from "../components/Income";
+import Income from "../components/income/Income";
 import Savings from "../components/savings/Savings";
 import Transactions from "../components/Transactions";
 

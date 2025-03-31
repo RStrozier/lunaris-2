@@ -1,7 +1,9 @@
 
 const AchievementsDashboard = () => {
   return (
-    <div>AchievementsDashboard</div>
+    <>
+        <div>Achievements Dashboard</div>
+    </>
   )
 }
 
