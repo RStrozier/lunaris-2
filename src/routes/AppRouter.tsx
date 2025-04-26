@@ -17,10 +17,10 @@ function AppRouter() {
   return (
     <Routes>
       {/* Home */}
-      <Route path="/" element={<Dashboard/>} />
+      <Route path="/" element={<NetWorthDashboard/>} />
 
-      {/* Dashboards */}
-      <Route path="/net-worth" element={<NetWorthDashboard/>} />
+      {/* Dashboards */}s
+      <Route path="/all-dashobards" element={<Dashboard/>} />
       <Route path="/budget" element={<BudgetDashboard/>} />
       <Route path="/achievements" element={<AchievementsDashboard/>} />
       <Route path="/savings-goals" element={<SavingsGoalsDashboard/>} />
